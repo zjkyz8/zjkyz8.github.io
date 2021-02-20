@@ -220,10 +220,39 @@ echo.EchoFilter(input, output, delay=0.7, atten=4)
 在导入时不要使用相对名称。即使模块在相同包下，也要使用完整的包名。此要求可以阻止潜在的包被导入两次的问题发生。
 从[导入类型](#31812-导入类型)与[six.moves模块](https://six.readthedocs.io/#module-six.moves)中导入不在此规范约束范围内。
 #### 2.3 包(Packages)
+使用模块全路径形式导入模块。
 ##### 2.3.1 优势
+避免模块名称冲突，避免导入开发人员不期望的路径下的模块。使模块的查找变得简单。
 ##### 2.3.2 劣势
+由于需要保持包的层级，代码部署难度增加。不过在现代部署机制下，这不是一个问题。
 ##### 2.3.3 决议
+所有代码在导入模块时都要使用模块名加包名的形式。
+导入应当如下所示：
+推荐方式：
+```python
+# Reference absl.flags in code with the complete name (verbose).
+import absl.flags
+from doctor.who import jodie
+
+FLAGS = absl.flags.FLAGS
+```
+```python
+# Reference flags in code with just the module name (common).
+from absl import flags
+from doctor.who import jodie
+
+FLAGS = flags.FLAGS
+```
+禁止方式：（假设文件位于```doctor/who/```，```jodie.py```也位于相同位置）
+```python
+# Unclear what module the author wanted and what will be imported.  The actual
+# import behavior depends on external factors controlling sys.path.
+# Which possible jodie module did the author intend to import?
+import jodie
+```
+尽管在一些环境中主程序位于```sys.path```下，我们仍然不能假设所有主程序都位于```sys.path```下。这种情况下，代码应当假设```import jodie```导入的是第三方的或指向位于顶层的名为```jodie```的包，而非相同路径下的```jodie.py```。
 #### 2.4 异常(Exceptions)
+
 ##### 2.4.1 定义
 ##### 2.4.2 优势
 ##### 2.4.3 劣势
