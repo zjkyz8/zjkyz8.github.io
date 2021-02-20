@@ -155,12 +155,48 @@
       - [3.18.15 泛型](#31815-泛型)
   - [4 结语](#4-结语)
 ### 1 背景
+在谷歌中，主要使用的动态语言是Python。本风格指南列举了在Python编程中推荐使用的和避免使用的规则。
+
+为了能够正确格式化代码，我们创建了[Vim配置文件](https://google.github.io/styleguide/google_python_style.vim)，对于Emacs用户，可以使用默认配置文件。
+
+很多团队使用[yapf](https://github.com/google/yapf/)自动格式化工具以避免关于格式的争论。
 ### 2 Python语言规则
 #### 2.1 Lint
+基于[pylintrc](https://google.github.io/styleguide/pylintrc)在你的代码上运行```pylint```
 ##### 2.1.1 定义
+```pylint```是一个可以用来发现Python代码中存在的缺陷与风格问题的工具。它可以发现那些通常在静态语言例如C和C++中本应由编译器发现的问题。由于Python的动态本性，可能一些警告是错误的；但是这些不正确的警告是罕见的。
 ##### 2.1.2 优势
+能够捕获诸如拼写错误、使用未赋值的变量等容易忽略的错误。
 ##### 2.1.3 劣势
+```pylint```不是完美的。为了能够利用这个工具，有时候我们需要使用一些变通方式，以禁止或修复警告。
 ##### 2.1.4 决议
+确保使用```pylint```检查你的代码。
+禁止那些不适当的警告，确保其他的问题可以被发现。可以通过行级注释禁止警告。
+```python
+dict = 'something awful' # Bad Idea... pylint: disable=redefined-buildin
+```
+```pylint```警告通过符号名称(```empty-docstring```) 标识，谷歌特定警告以```g-```开头。
+
+如果禁止警告的原因无法通过符号名称清晰表达，可以添加一个解释。
+
+通过此方式禁止的告警有一个好处是可以很容易的找到它。
+
+可以通过以下命令查看所有```pylint```的警告：
+```bash
+pylint --list-msgs
+```
+使用如下命令获取某个警告的详细信息：
+```bash
+pylint --help-msg=C6409
+```
+推荐使用```pylint: disable```代替已被废弃的过时形式```pylint: disable-msg```
+未使用的参数警告可以通过在函数的起始部分添加删除变量语句来修复警告。同时添加注释以解释删除的原因。"Unused"就足够了。例如：
+```python
+def viking_cafe_order(spam, beans, eggs=None):
+    del beans, eggs  # Unused by vikings.
+    return spam + spam + spam
+```
+其他常规修复这一警告的形式包括使用'\_'作为未使用的参数的标识，或在未使用的变量名前添加'unused\_'，或者为未使用的变量赋值'\_'。这些方式都是允许使用的，但不鼓励使用这种方式。因为这些方式会阻止函数的调用方通过变量名传值，并且不会强制这些未使用的参数未来也不会被使用。
 #### 2.2 导入(Imports)
 ##### 2.2.1 定义
 ##### 2.2.2 优势
