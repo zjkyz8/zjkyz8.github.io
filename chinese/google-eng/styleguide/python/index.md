@@ -229,6 +229,7 @@ echo.EchoFilter(input, output, delay=0.7, atten=4)
 ##### 2.3.3 决议
 所有代码在导入模块时都要使用模块名加包名的形式。
 导入应当如下所示：
+
 推荐方式：
 ```python
 # Reference absl.flags in code with the complete name (verbose).
@@ -264,6 +265,7 @@ import jodie
 ##### 2.4.4 决议
 异常的使用必须遵循特定的情形：
 * 在表意充分的情况下，使用内建的异常类。例如，抛出```ValueError```表示诸如违反先决条件的编程错误（例如在需要一个正数的地方传入一个负数的错误）。不要在公有API中使用```assert```语句验证参数的值。```assert```是用来保证内部正确性的，不能用于强制正确使用，也不能用于表示未知事件的发生。如果，使用抛出异常语句。例如：
+
   推荐方式
   ```python
   def connect_to_next_port(self, minimum):
@@ -416,7 +418,69 @@ import jodie
 ##### 2.20.4 决议
 ### Python风格规则
 #### 3.1 分号
+不要在代码行的结尾使用分号，也不要使用分号将两条语句放到一行中。
 #### 3.2 代码行长度
+代码行最长为80个字符。
+80个字符限制的例外：
+* 更长的导入语句
+* URL、路径或注释中包含的较长标志
+* 定义在模块级别的不包含空格的字符串常量，这种常量较难分为两行，例如URL与路径。
+  * Pylint禁用注释。（例如：```# pylint: disable=invalid-name```）
+
+除```with```语句需要三个或更多上下文管理的情况外，不要使用反斜杠进行代码换行。
+
+使用Python中的[小括号、中括号与大括号中的隐式代码行拼接](http://docs.python.org/reference/lexical_analysis.html#implicit-line-joining)。如果需要，可以在表达式前后添加额外的小括号。
+
+推荐形式：
+```python
+foo_bar(self, width, height, color='black', design=None, x='foo',
+             emphasis=None, highlight=0)
+
+     if (width == 0 and height == 0 and
+         color == 'red' and emphasis == 'strong'):
+```
+当一个字符串无法放在一行中时，使用小括号的隐式代码行拼接。
+```python
+x = ('This will build a very long long '
+     'long long long long long long string')
+```
+在注释中，必要时可将长的URL放入单独的一行。
+
+推荐形式：
+```python
+# See details at
+# http://www.example.com/us/developer/documentation/api/content/v2.0/csv_file_name_extension_full_specification.html
+```
+禁止形式：
+```python
+# See details at
+# http://www.example.com/us/developer/documentation/api/content/\
+# v2.0/csv_file_name_extension_full_specification.html
+```
+当定义的```with```语句的表达式有三行或更多行，允许使用反斜杠连接代码行。对于两行表达式的情形，可以使用嵌套```with```语句：
+
+推荐形式：
+```python
+with very_long_first_expression_function() as spam, \
+    very_long_second_expression_function() as beans, \
+    third_thing() as eggs:
+    place_order(eggs, beans, spam, beans)
+```
+禁止形式：
+```python
+with VeryLongFirstExpressionFunction() as spam, \
+    VeryLongSecondExpressionFunction() as beans:
+    PlaceOrder(eggs, beans, spam, beans)
+```
+推荐形式：
+```python
+with very_long_first_expression_function() as spam:
+    with very_long_second_expression_function() as beans:
+        place_order(beans, spam)
+```
+请注意以上关于行拼接的例子中包含的缩进；具体解释请参阅[缩进](https://google.github.io/styleguide/pyguide.html#s3.4-indentation)
+
+对于其他行达到80个字符限制，且yapf无法自动，允许行长度超过这一限制。
 #### 3.3 括号
 #### 3.4 缩进
 ##### 3.4.1
