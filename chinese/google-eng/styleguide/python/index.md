@@ -482,8 +482,92 @@ with very_long_first_expression_function() as spam:
 
 对于其他行达到80个字符限制，且yapf无法自动，允许行长度超过这一限制。
 #### 3.3 括号
+谨慎使用括号
+
+在元组上使用括号是可以的，但并不是必须的。不要在返回语句或条件语句中使用括号，除非是为了行拼接的目的或是为了表示元组。
+
+推荐方式：
+```python
+if foo:
+    bar()
+while x:
+    x = bar()
+if x and y:
+    bar()
+if not x:
+    bar()
+# For a 1 item tuple the ()s are more visually obvious than the comma.
+onesie = (foo,)
+return foo
+return spam, beans
+return (spam, beans)
+for (x, y) in dict.items(): ...
+```
+禁止形式：
+```python 
+if (x):
+    bar()
+if not(x):
+    bar()
+return (foo)
+```
 #### 3.4 缩进
-##### 3.4.1
+使用*4个空格*缩进代码
+
+不要使用制表符或者制表符空格混合的方式。对于隐式行合并（[代码行长度](#32-代码行长度)一节中描述的情况）的情况，要么保证括号包含的元素垂直对齐，要么使用4个空格的[悬挂缩进](https://www.google.com.hk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjpneOuuPzuAhXLGaYKHShaCUkQFjABegQIBBAD&url=https%3A%2F%2Fbaike.baidu.com%2Fitem%2F%25E6%2582%25AC%25E6%258C%2582%25E7%25BC%25A9%25E8%25BF%259B&usg=AOvVaw2__x8ye-clizvRX5Y95xXv)，同时保证左括号后换行。
+
+推荐方式：
+```python
+# Aligned with opening delimiter
+foo = long_function_name(var_one, var_two,
+                        var_three, var_four)
+meal = (spam,
+        beans)
+
+# Aligned with opening delimiter in a dictionary
+foo = {
+    long_dictionary_key: value1 +
+                        value2,
+    ...
+}
+
+# 4-space hanging indent; nothing on first line
+foo = long_function_name(
+    var_one, var_two, var_three,
+    var_four)
+meal = (
+    spam,
+    beans)
+
+# 4-space hanging indent in a dictionary
+foo = {
+    long_dictionary_key:
+        long_dictionary_value,
+    ...
+}
+```
+禁止形式：
+```python
+# Stuff on first line forbidden
+foo = long_function_name(var_one, var_two,
+    var_three, var_four)
+meal = (spam,
+    beans)
+
+# 2-space hanging indent forbidden
+foo = long_function_name(
+    var_one, var_two, var_three,
+    var_four)
+
+# No hanging indent in a dictionary
+foo = {
+    long_dictionary_key:
+    long_dictionary_value,
+    ...
+}
+```
+##### 3.4.1 
+
 #### 3.5 空行
 #### 3.6 空格
 #### 3.7 Shebang
