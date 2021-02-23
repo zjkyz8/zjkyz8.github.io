@@ -114,7 +114,7 @@
       - [3.4.1](#341)
     - [3.5 空行](#35-空行)
     - [3.6 空格](#36-空格)
-    - [3.7 Shebang](#37-shebang)
+    - [3.7 Shebang行](#37-shebang行)
     - [3.8 注释与Docstring](#38-注释与docstring)
       - [3.8.1 Docstrings](#381-docstrings)
       - [3.8.2 模块(Modules)](#382-模块modules)
@@ -569,10 +569,103 @@ foo = {
 ##### 3.4.1 
 
 #### 3.5 空行
+在顶级定义之间使用两个空行，例如函数定义和类定义。在方法之间使用一行定义，在类定义行与类第一个方法之间使用一个空行。在方法定义行后面不能再加空行。在函数和方法体内部可以按照判断自行添加空行。
 #### 3.6 空格
-#### 3.7 Shebang
+遵循标准印刷规则在标点符号前后使用空格。
+
+在小括号、中括号、大括号内部不要添加空格。
+
+推荐方式：
+```python
+spam(ham[1], {eggs: 2}, [])
+```
+
+禁止方式：
+```python
+spam( ham[ 1 ], { eggs: 2 }, [ ] )
+```
+在逗号分号冒号前不要添加空格。除行尾外，在逗号分号冒号后添加空格。
+
+推荐方式：
+```python
+if x == 4:
+    print(x, y)
+x, y = y, x
+```
+
+禁止方式：
+```python
+if x == 4 :
+    print(x , y)
+x , y = y , x
+```
+在参数列表、索引或数组前的左括号之前不要添加空格
+
+推荐方式：
+spam(1)
+```
+禁止方式：
+```python
+spam (1)
+```
+推荐方式：
+```python
+dict['key'] = list[index]
+```
+禁止方式：
+```python
+dict ['key'] = list [index]
+```
+在赋值运算符（```=```）、比较运算符（```==，<，>，!=，<>，<=，>=，in，not in，is，is not```）与布尔运算符（```and，or，not```）前后各添加一个空格。是否在数学运算符（```+```，```-```，```*```，```/```，```//```，```%```，```**```，```@```）前后添加空格可由个人自行决断。
+
+推荐方式：
+```python
+x == 1
+```
+禁止方式：
+```python
+x<1
+```
+当使用了[类型注解](#220-类型注解)时，需要在默认值的```=```前后添加空格外，其他情况的默认值定义均无需使用空格。
+
+推荐方式：
+```python
+def complex(real, imag=0.0): return Magic(r=real, i=imag)
+def complex(real, imag: float = 0.0): return Magic(r=real, i=imag)
+```
+禁止方式：
+```python
+def complex(real, imag = 0.0): return Magic(r = real, i = imag)
+def complex(real, imag: float=0.0): return Magic(r = real, i = imag)
+```
+不要使用空格来保持多行中符号的垂直对齐，这会增加维护负担。
+
+推荐方式：
+```python
+foo = 1000  # comment
+long_name = 2  # comment that should not be aligned
+
+dictionary = {
+    'foo': 1,
+    'long_name': 2,
+}
+```
+禁止方式：
+```python
+foo       = 1000  # comment
+long_name = 2     # comment that should not be aligned
+
+dictionary = {
+    'foo'      : 1,
+    'long_name': 2,
+}
+```
+#### 3.7 [Shebang](https://zh.wikipedia.org/wiki/Shebang)行
+大多数的python文件无需以```#!```作为起始行。在程序的主文件中使用```#!/usr/bin/env python3```（以支持虚拟环境）或者依[PEP-394](https://www.python.org/dev/peps/pep-0394/)使用```#!/usr/bin/python3```。
 #### 3.8 注释与Docstring
+确保正确使用模块、函数、方法的docstring以及行内注释
 ##### 3.8.1 Docstrings
+Python使用docstrings文档化代码。docstring是包、模块、类或者函数内的第一条语句。```pydoc```通过对象的```__doc__```拉取这些字符串（在模块上运行```pydoc```并观察结果）。按照[PEP 257](https://www.google.com/url?sa=D&q=http://www.python.org/dev/peps/pep-0257/)，使用三个双引号```"""```作为docstrings的格式。
 ##### 3.8.2 模块(Modules)
 ##### 3.8.3 函数与方法
 ##### 3.8.4 类
@@ -607,6 +700,45 @@ foo = {
 ##### 3.18.11 字符串类型
 ##### 3.18.12 导入类型
 ##### 3.18.13 条件导入
+
 ##### 3.18.14 循环依赖
+循环依赖是由类型的坏味道引起的。这种代码是练习重构的好实例。尽管技术上可以保留循环依赖，但是各种构建系统会阻止模块彼此依赖。
+
+使用```Any```替换引起循环依赖的模块。设置一个有意义的[别名](#3186-类型别名)，在本模块内使用新的类型名称（Any的任何特性均为Any）。在别名的定义与最后一条导入语句之间添加空行。
+```python
+from typing import Any
+
+some_mod = Any  # some_mod.py imports this module.
+...
+
+def my_method(self, var: "some_mod.SomeType") -> None:
+  ...
+```
 ##### 3.18.15 泛型
+当添加注解时，推荐指定参数类型为泛型，否则，[参数类型将被推导为```Any```](https://www.python.org/dev/peps/pep-0484/#the-any-type)
+```python
+def get_names(employee_ids: List[int]) -> Dict[int, Any]:
+  ...
+```
+```python
+# These are both interpreted as get_names(employee_ids: List[Any]) -> Dict[Any, Any]
+def get_names(employee_ids: list) -> Dict:
+  ...
+
+def get_names(employee_ids: List) -> Dict:
+  ...
+```
+如果最适合泛型的类型是```Any```，那么进行显式声名，但在很多场景下```TypeVar```更合适：
+```python
+def get_names(employee_ids: List[Any]) -> Dict[Any, Text]:
+  """Returns a mapping from employee ID to employee name for given IDs."""
+```
+```python
+T = TypeVar('T')
+def get_names(employee_ids: List[T]) -> Dict[T, Text]:
+  """Returns a mapping from employee ID to employee name for given IDs."""
+```
 ### 4 结语
+当编写代码时，花几分钟的时间阅读一下周围的代码并确认代码的风格。如果算术运算符前后使用了空格，那么你也使用。如果注释前后使用了#符号，那么你也如此。
+
+本风格指南的意义是使用常规的词汇进行编程，以使开发人员重点关注内容而非实现方式。我们提供了大家普遍熟悉的词汇作为全局风格规范，但小范围的风格规范也同等重要。如果你在某个文件中增加的代码与已经存在的代码有很大不同，将导致代码阅读人员读到该代码时失去顺滑感。应避免这种情况。
